@@ -1,37 +1,27 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-
-// In a real app, this would come from environment variables
-// For demo purposes, we'll need an API key at runtime
-let API_KEY = '';
+import { GEMINI_API_KEY } from '@env';
 
 export class GoogleAIService {
-  private genAI: GoogleGenerativeAI | null = null;
+  private genAI: GoogleGenerativeAI;
   
   constructor() {
-    // Initialization is deferred until setApiKey is called
+    // Initialize with the API key from environment variables
+    this.genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
   }
 
   /**
-   * Set API key and initialize the service
-   */
-  setApiKey(apiKey: string): void {
-    API_KEY = apiKey;
-    this.genAI = new GoogleGenerativeAI(API_KEY);
-  }
-
-  /**
-   * Check if the API key is set
+   * Check if the API key is configured
    */
   isConfigured(): boolean {
-    return !!API_KEY && !!this.genAI;
+    return !!GEMINI_API_KEY;
   }
 
   /**
    * Process a query and get a response from Google Generative AI
    */
   async getResponse(query: string): Promise<string> {
-    if (!this.genAI) {
-      throw new Error('Google AI service not initialized. Call setApiKey first.');
+    if (!this.isConfigured()) {
+      throw new Error('Google AI service not properly configured. Check your environment variables.');
     }
 
     try {

@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, ScrollView, TextInput, Button, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, View, Text, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { VoiceAIComponent } from './VoiceAIComponent';
 import { GoogleAIService } from './GoogleAIService';
+import { GEMINI_API_KEY } from '@env';
 
 type Conversation = {
   type: 'user' | 'assistant';
@@ -11,48 +12,48 @@ type Conversation = {
 
 export default function VoiceAIScreen() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [apiKey, setApiKey] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isKeyConfigured, setIsKeyConfigured] = useState(false);
   const googleAIService = useRef(new GoogleAIService()).current;
   const scrollViewRef = useRef<ScrollView>(null);
+  const [isAIReady, setIsAIReady] = useState(false);
+
+  // Check if the API key is available
+  useEffect(() => {
+    const apiKeyAvailable = !!GEMINI_API_KEY;
+    setIsAIReady(apiKeyAvailable);
+    
+    if (!apiKeyAvailable) {
+      console.warn('Gemini API key not found. The app will operate in demo mode.');
+    }
+  }, []);
 
   const handleTranscription = async (text: string) => {
     // Add user query to conversation
     setConversations(prev => [...prev, { type: 'user', text }]);
     
-    if (!isKeyConfigured) {
-      setConversations(prev => [
-        ...prev, 
-        { 
-          type: 'assistant', 
-          text: 'Please configure your Google AI API key first using the form at the bottom.' 
-        }
-      ]);
-      return;
-    }
-    
     try {
       setIsProcessing(true);
       
-      // In a real app, you would process this with Google AI
-      // For the demo, we'll simulate responses based on cooking topics
-      
       let response: string;
       
-      if (text.toLowerCase().includes('carbonara') || text.toLowerCase().includes('pasta')) {
-        response = "For a classic pasta carbonara, you'll need pasta, eggs, pancetta or bacon, Parmesan cheese, black pepper, and optionally garlic. Cook the pasta, fry the pancetta, mix eggs and cheese in a bowl, then combine everything off heat to create a creamy sauce without scrambling the eggs.";
-      } else if (text.toLowerCase().includes('substitute') && text.toLowerCase().includes('egg')) {
-        response = "For egg substitutes in baking: 1 banana, 1/4 cup applesauce, 1/4 cup yogurt, or 1 tablespoon ground flaxseed mixed with 3 tablespoons water can replace one egg. The best substitute depends on what you're baking!";
-      } else if (text.toLowerCase().includes('chicken') && (text.toLowerCase().includes('cook') || text.toLowerCase().includes('bake'))) {
-        response = "For boneless chicken breasts, bake at 375°F (190°C) for 20-25 minutes or until internal temperature reaches 165°F (74°C). Cooking time varies based on thickness - use a meat thermometer for best results!";
+      if (!isAIReady) {
+        // Use hardcoded responses in demo mode
+        if (text.toLowerCase().includes('carbonara') || text.toLowerCase().includes('pasta')) {
+          response = "For a classic pasta carbonara, you'll need pasta, eggs, pancetta or bacon, Parmesan cheese, black pepper, and optionally garlic. Cook the pasta, fry the pancetta, mix eggs and cheese in a bowl, then combine everything off heat to create a creamy sauce without scrambling the eggs.";
+        } else if (text.toLowerCase().includes('substitute') && text.toLowerCase().includes('egg')) {
+          response = "For egg substitutes in baking: 1 banana, 1/4 cup applesauce, 1/4 cup yogurt, or 1 tablespoon ground flaxseed mixed with 3 tablespoons water can replace one egg. The best substitute depends on what you're baking!";
+        } else if (text.toLowerCase().includes('chicken') && (text.toLowerCase().includes('cook') || text.toLowerCase().includes('bake'))) {
+          response = "For boneless chicken breasts, bake at 375°F (190°C) for 20-25 minutes or until internal temperature reaches 165°F (74°C). Cooking time varies based on thickness - use a meat thermometer for best results!";
+        } else {
+          response = "That's a great cooking question! I'm currently in demo mode. For detailed instructions, I'd recommend checking specialized cooking websites or cookbooks that can provide more comprehensive guidance.";
+        }
       } else {
-        // If we can't match a predefined response, try the Google AI service
+        // Use Gemini API
         try {
           response = await googleAIService.getResponse(text);
         } catch (error) {
-          // Fallback response if Google AI fails
-          response = "That's a great cooking question! For detailed instructions, I'd recommend checking specialized cooking websites or cookbooks that can provide more comprehensive guidance.";
+          console.error('Error getting AI response:', error);
+          response = "I'm having trouble connecting to my knowledge service right now. Could you try asking another cooking question?";
         }
       }
       
@@ -70,21 +71,6 @@ export default function VoiceAIScreen() {
     }
   };
 
-  const handleConfigureApiKey = () => {
-    if (!apiKey.trim()) {
-      Alert.alert('Error', 'Please enter a valid API key');
-      return;
-    }
-    
-    try {
-      googleAIService.setApiKey(apiKey);
-      setIsKeyConfigured(true);
-      Alert.alert('Success', 'API key configured successfully');
-    } catch (error) {
-      Alert.alert('Error', 'Failed to configure API key');
-    }
-  };
-
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     setTimeout(() => {
@@ -98,6 +84,7 @@ export default function VoiceAIScreen() {
       
       <View style={styles.header}>
         <Text style={styles.headerTitle}>CookMate Voice Assistant</Text>
+        {!isAIReady && <Text style={styles.demoTag}>Demo Mode</Text>}
       </View>
 
       <ScrollView 
@@ -136,19 +123,6 @@ export default function VoiceAIScreen() {
       <View style={styles.voiceControlContainer}>
         <VoiceAIComponent onTranscriptionComplete={handleTranscription} />
       </View>
-      
-      {!isKeyConfigured && (
-        <View style={styles.apiKeyContainer}>
-          <TextInput
-            style={styles.apiKeyInput}
-            placeholder="Enter Google AI API Key (optional for demo)"
-            value={apiKey}
-            onChangeText={setApiKey}
-            secureTextEntry
-          />
-          <Button title="Configure" onPress={handleConfigureApiKey} />
-        </View>
-      )}
     </SafeAreaView>
   );
 }
@@ -167,6 +141,16 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
+  },
+  demoTag: {
+    fontSize: 12,
+    color: '#fff',
+    backgroundColor: '#FFA726',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+    marginTop: 4,
+    overflow: 'hidden',
   },
   responseContainer: {
     flex: 1,

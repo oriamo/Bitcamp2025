@@ -11,11 +11,15 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
+    "@livekit/react-native": "^2.7.2",
+    "@livekit/react-native-webrtc": "^125.0.9",
     "expo": "~52.0.43",
     "expo-av": "^15.0.2",
     "expo-status-bar": "~2.0.1",
+    "livekit-client": "^2.11.0",
     "react": "18.3.1",
-    "react-native": "0.76.9"
+    "react-native": "0.76.9",
+    "react-native-dotenv": "^3.4.11"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
