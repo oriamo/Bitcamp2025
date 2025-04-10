@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { VoiceAIComponent } from './VoiceAIComponent';
 import { GoogleAIService } from './GoogleAIService';
-import { GEMINI_API_KEY } from '@env';
 
 type Conversation = {
   type: 'user' | 'assistant';
@@ -19,11 +18,11 @@ export default function VoiceAIScreen() {
 
   // Check if the API key is available
   useEffect(() => {
-    const apiKeyAvailable = !!GEMINI_API_KEY;
-    setIsAIReady(apiKeyAvailable);
+    const aiConfigured = googleAIService.isConfigured();
+    setIsAIReady(aiConfigured);
     
-    if (!apiKeyAvailable) {
-      console.warn('Gemini API key not found. The app will operate in demo mode.');
+    if (!aiConfigured) {
+      console.warn('Gemini API key not configured properly. The app will operate in demo mode.');
     }
   }, []);
 
@@ -44,6 +43,10 @@ export default function VoiceAIScreen() {
           response = "For egg substitutes in baking: 1 banana, 1/4 cup applesauce, 1/4 cup yogurt, or 1 tablespoon ground flaxseed mixed with 3 tablespoons water can replace one egg. The best substitute depends on what you're baking!";
         } else if (text.toLowerCase().includes('chicken') && (text.toLowerCase().includes('cook') || text.toLowerCase().includes('bake'))) {
           response = "For boneless chicken breasts, bake at 375°F (190°C) for 20-25 minutes or until internal temperature reaches 165°F (74°C). Cooking time varies based on thickness - use a meat thermometer for best results!";
+        } else if (text.toLowerCase().includes('rice')) {
+          response = "For fluffy rice, rinse the rice thoroughly before cooking to remove excess starch. Use a 1:2 ratio of rice to water. Bring to a boil, then reduce to low heat and cover. Cook white rice for about 18 minutes, and don't lift the lid during cooking. Let it rest for 5-10 minutes after cooking before fluffing with a fork.";
+        } else if (text.toLowerCase().includes('bread') || text.toLowerCase().includes('baking')) {
+          response = "To know when bread is done baking, look for a golden brown crust and tap the bottom - it should sound hollow. For more accuracy, use a thermometer; most bread is done when the internal temperature reaches 190-210°F (88-99°C).";
         } else {
           response = "That's a great cooking question! I'm currently in demo mode. For detailed instructions, I'd recommend checking specialized cooking websites or cookbooks that can provide more comprehensive guidance.";
         }
@@ -79,7 +82,7 @@ export default function VoiceAIScreen() {
   }, [conversations]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <StatusBar style="auto" />
       
       <View style={styles.header}>
@@ -123,7 +126,7 @@ export default function VoiceAIScreen() {
       <View style={styles.voiceControlContainer}>
         <VoiceAIComponent onTranscriptionComplete={handleTranscription} />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
