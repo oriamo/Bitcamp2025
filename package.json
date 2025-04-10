@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@google/generative-ai": "^0.24.0",
+    "@livekit/react-native": "^2.7.2",
+    "@livekit/react-native-webrtc": "^125.0.9",
+    "@react-native-async-storage/async-storage": "^2.1.2",
+    "livekit-client": "^2.11.0",
+    "react-native-dotenv": "^3.4.11",
+    "react-native-vector-icons": "^10.2.0"
+  }
+}
