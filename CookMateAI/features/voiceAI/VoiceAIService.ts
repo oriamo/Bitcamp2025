@@ -23,6 +23,8 @@ export class VoiceAIService {
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
+        playThroughEarpieceAndroid: false,
+        staysActiveInBackground: true,
       });
       
       this.recording = new Audio.Recording();

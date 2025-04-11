@@ -9,7 +9,7 @@ type Conversation = {
   text: string;
 };
 
-export default function VoiceAIScreen() {
+export function VoiceAIScreen() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const googleAIService = useRef(new GoogleAIService()).current;
