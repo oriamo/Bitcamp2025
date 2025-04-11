@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, ScrollView, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { VoiceAIComponent } from './VoiceAIComponent';
 import { GoogleAIService } from './GoogleAIService';
@@ -9,7 +9,11 @@ type Conversation = {
   text: string;
 };
 
-export function VoiceAIScreen() {
+interface VoiceAIScreenProps {
+  onBack?: () => void;
+}
+
+export function VoiceAIScreen({ onBack }: VoiceAIScreenProps) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const googleAIService = useRef(new GoogleAIService()).current;
@@ -86,6 +90,11 @@ export function VoiceAIScreen() {
       <StatusBar style="auto" />
       
       <View style={styles.header}>
+        {onBack && (
+          <TouchableOpacity style={styles.backButton} onPress={onBack}>
+            <Text style={styles.backButtonText}>← Back</Text>
+          </TouchableOpacity>
+        )}
         <Text style={styles.headerTitle}>CookMate Voice Assistant</Text>
         {!isAIReady && <Text style={styles.demoTag}>Demo Mode</Text>}
       </View>
@@ -139,11 +148,24 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#4285F4',
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    position: 'relative',
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: 'white',
+  },
+  backButton: {
+    position: 'absolute',
+    left: 16,
+    zIndex: 10,
+  },
+  backButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
   },
   demoTag: {
     fontSize: 12,

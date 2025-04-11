@@ -6,10 +6,14 @@ module.exports = function(api) {
       ["module:react-native-dotenv", {
         "moduleName": "@env",
         "path": ".env",
-        "blacklist": null,
-        "whitelist": null,
+        "allowlist": [
+          "GEMINI_API_KEY",
+          "LIVEKIT_API_KEY",
+          "LIVEKIT_API_SECRET",
+          "LIVEKIT_URL"
+        ],
         "safe": false,
-        "allowUndefined": true
+        "allowUndefined": false
       }]
     ]
   };

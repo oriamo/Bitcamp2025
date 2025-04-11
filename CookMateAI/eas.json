@@ -1,0 +1,42 @@
+{
+  "cli": {
+    "version": ">= 5.9.3",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleDebug",
+        "withoutCredentials": true
+      },
+      "env": {
+        "GEMINI_API_KEY": "AIzaSyCUWRB78A2bhi5Git8W243DyU3ANL_s1kU"
+      },
+      "ios": {
+        "buildConfiguration": "Debug"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk",
+        "withoutCredentials": true
+      },
+      "env": {
+        "GEMINI_API_KEY": "AIzaSyCUWRB78A2bhi5Git8W243DyU3ANL_s1kU"
+      },
+      "channel": "preview"
+    },
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "GEMINI_API_KEY": "AIzaSyCUWRB78A2bhi5Git8W243DyU3ANL_s1kU"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

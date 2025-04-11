@@ -7,25 +7,49 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "doctor": "expo doctor --fix-dependencies",
+    "build:android": "eas build -p android --profile preview"
+  },
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "listUnknownPackages": false
+      }
+    },
+    "install": {
+      "exclude": [
+        "dotenv"
+      ]
+    }
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
-    "@livekit/react-native": "^2.7.2",
-    "@livekit/react-native-webrtc": "^125.0.9",
+    "@react-native-async-storage/async-storage": "^1.23.1",
+    "@react-navigation/bottom-tabs": "^7.3.10",
+    "@react-navigation/drawer": "^7.3.9",
+    "@react-navigation/native": "^7.1.6",
+    "@react-navigation/native-stack": "^7.3.10",
+    "@react-navigation/stack": "^7.2.10",
+    "axios": "^1.8.4",
     "expo": "~52.0.43",
     "expo-av": "^15.0.2",
+    "expo-linear-gradient": "^14.0.2",
     "expo-status-bar": "~2.0.1",
-    "livekit-client": "^2.11.0",
+    "expo-updates": "~0.27.4",
     "react": "18.3.1",
-    "react-dom": "^18.2.0",
+    "react-dom": "^18.3.1",
     "react-native": "0.76.9",
-    "react-native-dotenv": "^3.4.11",
+    "react-native-gesture-handler": "^2.25.0",
+    "react-native-reanimated": "^3.17.3",
+    "react-native-safe-area-context": "^5.3.0",
+    "react-native-screens": "^4.10.0",
     "react-native-web": "^0.19.13"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~18.3.12",
+    "react-native-dotenv": "^3.4.11",
     "typescript": "^5.3.3"
   },
   "private": true
